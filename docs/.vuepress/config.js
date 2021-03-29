@@ -3,7 +3,7 @@ module.exports = {
     description: 'Just playing around222',
     themeConfig: {
         nav: [
-            { text: '开发手册', link: '/guide/' },
+            { text: '-开发手册-', link: '/guide/' },
             { text: 'Github', link: 'https://github.com' },
         ]
     }
