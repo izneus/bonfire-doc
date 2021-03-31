@@ -1,10 +1,10 @@
 ---
 home: true
-heroImage: /hero.png
+heroImage: /fire.png
 heroText: Bonfire
 tagline: 开箱即用的生产级 SpringBoot 后台开发框架
 actionText: 快速上手 →
-actionLink: /zh/guide/
+actionLink: /guide/
 features:
 - title: 开箱即用
   details: 可以直接部署生产级服务。
