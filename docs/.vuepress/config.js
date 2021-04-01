@@ -6,6 +6,7 @@ module.exports = {
             { text: '指南', link: '/guide/' },
             { text: '捐赠', link: '/' },
             { text: 'FAQ', link: '/' },
+            { text: '博客', link: '/' },
             { text: 'Github', link: 'https://github.com' },
         ],
         sidebar: [
@@ -38,5 +39,8 @@ module.exports = {
             }
 
         ]
+    },
+    markdown: {
+        lineNumbers: true
     }
 }
