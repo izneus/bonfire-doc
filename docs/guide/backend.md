@@ -140,16 +140,99 @@ public class GlobalExceptionHandler {
 throw new BadRequestException(ErrorCode.PERMISSION_DENIED, "账号异常已被锁定，请联系系统管理员");
 ```
 
-## 日志
+## 访问日志
+自定义注解实现记录api调用日志，记录会保存在数据库sys_access_log表中，开发中在`controller`的方法上加`@AccessLog`，如下：
+``` java{1}
+@AccessLog("用户登录")
+@ApiOperation("用户登录")
+@PostMapping("/login")
+public LoginVO login(@Validated @RequestBody LoginQuery loginQuery) {
+    return loginService.login(loginQuery);
+}
+```
+注解详细代码请参考`com.izneus.bonfire.common.aspect.AccessLogAspect`
 
 ## 任务调度
 
 ## 代码生成
+使用 Mybatis Plus 的 CodeGenerator 生成 Controller、Service、Entity、Mapper 等，直接执行`com.izneus.bonfire.common.util.CodeGenerator`的 main 方法输入表名即可，注意需要先设置好数据库连接、package等变量。
 
 ## 服务监控
 
 ## 多数据源
+一个应用需要访问多个数据库的场景下，使用`@DS`注解切换数据源。
+1. `application.yml`中配置数据源。
+``` yml
+spring:
+  # 多数据源
+  datasource:
+    dynamic:
+      primary: bonfire
+      strict: false
+      datasource:
+        bonfire:
+          driver-class-name: oracle.jdbc.OracleDriver
+          url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
+          username: 账号
+          password: 密码
+        lamp:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/lamp?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+          username: 账号
+          password: 密码
+```
+2. 类或者方法上`@DS`切换数据源，不加注解默认会使用yml中primary定义的主库。
+``` java{2}
+@Service
+@DS("lamp")
+public class DsCityServiceImpl extends ServiceImpl<DsCityMapper, DsCityEntity> implements DsCityService {
 
-## 参数校验
+}
+```
+数据源分组等其他详细配置请参考[官方文档](https://dynamic-datasource.com/)
+
+## 请求参数校验
 
 ## 文档生成
+已集成 Swagger 生成api文档，主要注解在 Controller 和 接收参数的 POJO 上。启动项目后访问`http://localhost:8080/swagger-ui.html`查看文档。
+1. Controller 里，`@Api`和`@ApiOperation`，注意`@RequestMapping`里用/v1区分api版本。
+``` java{1,4,10}
+@Api(tags = "系统:登录")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1")
+public class LoginController {
+
+    private final LoginService loginService;
+
+    @AccessLog("用户登录")
+    @ApiOperation("用户登录")
+    @PostMapping("/login")
+    public LoginVO login(@Validated @RequestBody LoginQuery loginQuery) {
+        return loginService.login(loginQuery);
+    }
+
+}
+```
+2. POJO 里，`@ApiModel`和`@ApiModelProperty`。
+``` java{1,4,8,12,16}
+@ApiModel("登录表单")
+@Data
+public class LoginQuery {
+    @ApiModelProperty(value = "用户名", required = true)
+    @Pattern(regexp = RegExp.USERNAME, message = "用户名必须为6-20位字母或者数字")
+    private String username;
+
+    @ApiModelProperty(value = "密码", required = true)
+    @Pattern(regexp = RegExp.PASSWORD, message = "密码必须包含小写字母、大写字母和数字，长度为8～16")
+    private String password;
+
+    @ApiModelProperty(value = "验证码", required = true)
+    @NotBlank(message = "验证码不能为空")
+    private String captcha;
+
+    @ApiModelProperty(value = "验证码id", required = true)
+    @NotBlank(message = "验证码id不能为空")
+    private String captchaId;
+}
+```
