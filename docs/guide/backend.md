@@ -192,8 +192,59 @@ public class DsCityServiceImpl extends ServiceImpl<DsCityMapper, DsCityEntity> i
 数据源分组等其他详细配置请参考[官方文档](https://dynamic-datasource.com/)
 
 ## 请求参数校验
+对外暴露的api接口必然需要做参数校验，提高程序健壮性，否则应用部署上线，客户会让你看看什么叫残忍。这里我们使用`@Validated`校验参数。
+1. 在Controller的接收参数前加`@Validated`
+``` java{4}
+@AccessLog("用户登录")
+@ApiOperation("用户登录")
+@PostMapping("/login")
+public LoginVO login(@Validated @RequestBody LoginQuery loginQuery) {
+    return loginService.login(loginQuery);
+}
+```
+2. 在POJO里添加注解定义校验规则
+``` java{5,9,13,17}
+@ApiModel("登录表单")
+@Data
+public class LoginQuery {
+    @ApiModelProperty(value = "用户名", required = true)
+    @Pattern(regexp = RegExp.USERNAME, message = "用户名必须为6-20位字母或者数字")
+    private String username;
 
-## 文档生成
+    @ApiModelProperty(value = "密码", required = true)
+    @Pattern(regexp = RegExp.PASSWORD, message = "密码必须包含小写字母、大写字母和数字，长度为8～16")
+    private String password;
+
+    @ApiModelProperty(value = "验证码", required = true)
+    @NotBlank(message = "验证码不能为空")
+    private String captcha;
+
+    @ApiModelProperty(value = "验证码id", required = true)
+    @NotBlank(message = "验证码id不能为空")
+    private String captchaId;
+}
+```
+3. 常用注解，详情请参阅[官方文档](https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-builtin-constraints)
+
+|注解|说明|
+|---|---|
+|@Null|	检查该字段为空|
+|@NotNull|	不能为null|
+|@NotBlank|	不能为空，会忽视空格|
+|@NotEmpty|	不能为空|
+|@Max(value=)|	值只能小于或等于该值|
+|@Min(value=)|	值只能大于或等于该值|
+|@Past|	检查该字段的日期是在过去|
+|@Future|	检查该字段的日期是否是属于将来的日期|
+|@Email|	检查是否是一个有效的email地址|
+|@Pattern(regex=, flags=)|	必须符合指定的正则表达式|
+|@Range(min=,max=,message=)|必须在合适的范围内|
+|@Size(min=, max=)|	检查该字段的size是否在min和max之间，可以是字符串、数组、集合、Map等|
+|@Length(min=,max=)|	长度是否在min和max之间,只能用于字符串|
+|@AssertTrue|Boolean或boolean，该字段只能为true|
+|@AssertFalse|Boolean或boolean，该字段只能为false|
+
+## API文档
 已集成 Swagger 生成api文档，主要注解在 Controller 和 接收参数的 POJO 上。启动项目后访问`http://localhost:8080/swagger-ui.html`查看文档。
 1. Controller 里，`@Api`和`@ApiOperation`，注意`@RequestMapping`里用/v1区分api版本。
 ``` java{1,4,10}
