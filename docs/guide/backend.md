@@ -3,9 +3,41 @@
 ## 前期准备
 idea插件，lombok，alibaba java coding guidelines，key promoter x，mybatiscodehelperpro，statistic，maven
 
-## 权限控制
+## 认证和鉴权
 
 ## 缓存
+项目采用 Redis + @Cacheable 实现缓存。开启缓存的部分要注意命中率和数据一致性问题。
+```
+@CacheConfig：一些共用的缓存配置。
+
+@Cacheable：注解的方法的返回值将被加入缓存。在查询时，会先从缓存中获取，若不存在才再发起对数据库的访问
+
+@CachePut：每次都更新缓存。
+
+@CacheEvict：删除缓存。
+```
+具体使用可以参考`com.izneus.bonfire.module.system.service.impl.SysDictServiceImpl`，缓存了全部字典信息。`cacheNames`和`key`拼接组合后就是 Redis 存储缓存的 key。
+``` java{2,6,12}
+@Service
+@CacheConfig(cacheNames = "dict")
+public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDictEntity> implements SysDictService {
+
+    @Override
+    @CacheEvict(key = "'all'")
+    public void deleteDictById(String dictId) {
+        removeById(dictId);
+    }
+
+    @Override
+    @Cacheable(key = "'all'")
+    public List<CacheDictVO> cacheDicts() {
+        // 这里很简单的缓存了所有字典，增删改字典的时候直接删除了缓存
+        List<SysDictEntity> dicts = list();
+        return dicts.stream().map(dict -> BeanUtil.copyProperties(dict, CacheDictVO.class))
+                .collect(Collectors.toList());
+    }
+}
+```
 
 ## 全局异常处理
 异常处理是任何一个程序必备的功能，无论是开发时期的调试，还是部署之后的错误定位。否则对于api调用者和用户来说，简直要怀疑后台在折磨队友。
@@ -158,6 +190,7 @@ public LoginVO login(@Validated @RequestBody LoginQuery loginQuery) {
 使用 Mybatis Plus 的 CodeGenerator 生成 Controller、Service、Entity、Mapper 等，直接执行`com.izneus.bonfire.common.util.CodeGenerator`的 main 方法输入表名即可，注意需要先设置好数据库连接、package等变量。
 
 ## 服务监控
+系统提供主机名、地址、cpu、系统、内存、jvm、jre等信息。
 
 ## 多数据源
 一个应用需要访问多个数据库的场景下，使用`@DS`注解切换数据源。
@@ -287,3 +320,7 @@ public class LoginQuery {
     private String captchaId;
 }
 ```
+
+## 文件上传下载
+
+## 导入导出
