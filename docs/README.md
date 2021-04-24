@@ -14,5 +14,3 @@ features:
   details: 集成主流技术栈，state-of-the-art。
 footer: MIT Licensed | Copyright © since 2020 Izneus
 ---
-
-# Hello VuePress 999

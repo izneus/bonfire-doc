@@ -322,5 +322,14 @@ public class LoginQuery {
 ```
 
 ## 文件上传下载
+文件上传较简单，可以参考`SysFileController`的`uploadFile`方法，核心就是
+``` java
+multipartFile.transferTo(file);
+```
+重点说下文件下载。下载文件分2步：
+1. 生成临时token
+2. 用临时token下载文件
+
+后台提供`GET`方式下载文件，具体代码实现可参考`SysFileController`的`downloadFile`方法。
 
 ## 导入导出
