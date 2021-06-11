@@ -1,9 +1,19 @@
 # 后端手册
 
-## 前期准备
-idea插件，lombok，alibaba java coding guidelines，key promoter x，mybatiscodehelperpro，statistic，maven
-
 ## 认证和鉴权
+
+系统采用的是`Spring Security + JWT`形式。通过`Redis`扩展实现黑名单、后台踢用户下线(KickOff)等功能，具体的权限字符串也保存在`Redis`里。受保护的资源，都需要在请求头中携带token。请求Header中添加 `Authorization`项，`Bearer`的token类型。
+```
+# 注意Bearer和JWT之间有一个空格
+Authorization: Bearer xxxx.yyyy.zzzz
+```
+
+系统采用RBAC权限系统，都是多对多的关系。API的访问权限控制，只需要在`Controller`对应方法上使用`@PreAuthorize`注解。
+``` java{2}
+    // listUsers()就需要请求者有sys:users:list项权限
+    @PreAuthorize("hasAuthority('sys:users:list')")
+    public BasePageVO<ListUserVO> listUsers(@Validated ListUserQuery query) {...}
+```
 
 ## 缓存
 项目采用 Redis + @Cacheable 实现缓存。开启缓存的部分要注意命中率和数据一致性问题。
@@ -185,6 +195,25 @@ public LoginVO login(@Validated @RequestBody LoginQuery loginQuery) {
 注解详细代码请参考`com.izneus.bonfire.common.aspect.AccessLogAspect`
 
 ## 任务调度
+`SpringBoot`下最简单的定时任务就是`@Scheduled`注解。实际使用中，随着任务量的增加、调度参数的频繁更改，马上会造成调度任务混乱不堪。如果需要实现动态管理任务，并且提供友好的web页面，那么可以采用`Quartz`。具体代码可参见`com.izneus.bonfire.module.quartz`。增加新调度任务可按照如下流程：
+1. 后台添加任务逻辑处理类。可参考
+``` java
+public class SysTask {
+
+    /**
+     * 测试调度任务用的方法
+     *
+     * @param params 执行参数，这里采用的全部参数采用一条字符串传入，半角逗号分割，
+     *               方法体内自己分割之后转换类型之后使用
+     */
+    public void test(String params) {
+        log.info("SysTask.test执行，参数：{}", params);
+    }
+
+}
+```
+2. 前端新建定时任务信息。
+3. 执行任务调度。 
 
 ## 代码生成
 使用 Mybatis Plus 的 CodeGenerator 生成 Controller、Service、Entity、Mapper 等，直接执行`com.izneus.bonfire.common.util.CodeGenerator`的 main 方法输入表名即可，注意需要先设置好数据库连接、package等变量。
@@ -333,3 +362,4 @@ multipartFile.transferTo(file);
 后台提供`GET`方式下载文件，具体代码实现可参考`SysFileController`的`downloadFile`方法。
 
 ## 导入导出
+导入导出文件的传输，参考文件上传下载。以用户导入为例子，实现参考`SysUserController`下的`importUsers()`，流程为先上传Excel，信息保存在文件表中，解析表头把信息写入数据库。导出用户`exportUsers()`方向相反，读取用户表信息创建临时Excel文件，返回临时token。
