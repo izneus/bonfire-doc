@@ -21,9 +21,9 @@ Github：[https://github.com/izneus/bonfire-admin-vue.git](https://github.com/iz
 - 在线体验：TODO
 
 ## 演示图
-| ![登录页](/login.png) | ![用户管理](/user.png) |
+| ![登录页](./images/login.png) | ![用户管理](./images/user.png) |
 | --- | --- |
-| ![新增用户](/user3.png) | ![调度任务](/job.png) |
+| ![新增用户](./images/user3.png) | ![调度任务](./images/job.png) |
 
 ## 项目目标
 - **初学者**   
