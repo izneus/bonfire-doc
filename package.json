@@ -1,14 +1,14 @@
 {
   "name": "bonfire-doc",
-  "version": "1.0.0",
-  "description": "doc",
+  "version": "1.0.27",
+  "description": "bonfire项目保姆级文档",
   "main": "index.js",
   "scripts": {
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Izneus",
+  "license": "MIT",
   "devDependencies": {
     "@vuepress/plugin-search": "^2.0.0-beta.36",
     "vuepress": "^2.0.0-beta.36"

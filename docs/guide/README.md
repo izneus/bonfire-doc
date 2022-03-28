@@ -8,8 +8,7 @@ Bonfire是一个基于SpringBoot、Vue的前后端分离快速开发框架，主
 [![Github Forks](https://img.shields.io/github/forks/izneus/bonfire?style=social)](https://github.com/izneus/bonfire) -->
 
 ## 项目地址
-- 在线文档
-
+- 在线文档：[http://bonfire.izneus.com/](http://bonfire.izneus.com/)
 
 - 后端项目：   
 Gitee：[https://gitee.com/izneus/bonfire-mysql.git](https://gitee.com/izneus/bonfire-mysql.git)   
