@@ -23,10 +23,16 @@ https://gitee.com/izneus/bonfire-mysql.git
 ```
 
 2. **建立数据库**   
-找到工程`db`目录下的.sql文件，执行`bonfire_mysql.sql`建立系统基础表，执行`quartz_mysql_innodb.sql`建立Quartz调度框架需要的表。
+找到工程`db`目录下的.sql文件，   
+- 执行`bonfire_mysql.sql`建立系统基础表。
+- 执行`quartz_mysql_innodb.sql`建立Quartz调度框架需要的表。
+- 执行`flowable.mysql.all.create.sql`建立Flowable工作流引擎需要的表。
 
 3. **修改配置文件**   
 工程内有`application.yml`、`application-dev-example.yml`、`application-prod-example.yml`3个配置文件。请手动建立`application-dev.yml`、`application-prod.yml`2个配置文件，内容参考`-example`后缀的2个例子文件。修改数据库相关、redis相关的账号信息等。
+::: tip 提交yml配置文件
+正式开发中，项目组可能共同维护一组配置文件提交到git，所以注意删除 .gitignore 内的2个 yml 文件的忽略行
+:::
 
 4. **运行BonfireApplication**
 
