@@ -36,7 +36,7 @@ https://gitee.com/izneus/bonfire-mysql.git
 ::: tip 正式开发需注意
 1. 正式开发中，项目组可能共同维护一组配置文件提交到git，所以注意删除 .gitignore 内的2个 yml 文件的忽略行。
 1. pom文件，新开项目project.name建议修改为项目名称，用来区分build后的jar名称。
-1. 如果有项目共用redis的情况，注意修改Constant里的project_name作为key的前缀
+1. 如果有项目共用redis的情况，注意修改Constant里的project_name作为key的前缀。
 :::
 
 4. **运行BonfireApplication**
